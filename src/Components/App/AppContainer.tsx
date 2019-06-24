@@ -5,6 +5,9 @@ import { IS_LOGGED_IN } from "./AppQueries";
 import { type1Theme } from "../../type1Theme";
 import { ThemeProvider } from "styled-components";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.min.css";
+
 // 하단의 에러가 발생하면 any type을 변수 뒤에다 넣어라.
 // Property 'data' is optional in type 'PropsWithChildren<Partial<DataProps<{}, {}>> & Partial<MutateProps<{}, {}>>>' but required in type '{ data: any; }'.  TS2345
 
@@ -14,10 +17,15 @@ import { ThemeProvider } from "styled-components";
 // 이때 router 는 Url을 확인해서 이 페이지가 어디인지를 확인하고 이를 추가적으로 호출하여 값을 가져와 보여주게 된다.
 // main 접속시 index.tsx -> appContainer->appPresenter->Router->mainContainer->mainPresenter -> 최종 화면 보여줌
 
+// ?  React.Fragment란???
+// 여러개의 엘리먼트를 하나로 그룹화 하는것.
 const AppContainer: any = ({ data }) => (
-  <ThemeProvider theme={type1Theme}>
-    <AppPresenter isLoggedIn={data.auth.isLoggedIn} />
-  </ThemeProvider>
+  <React.Fragment>
+    <ThemeProvider theme={type1Theme}>
+      <AppPresenter isLoggedIn={data.auth.isLoggedIn} />
+    </ThemeProvider>
+    <ToastContainer draggable={true} position={"bottom-center"} />
+  </React.Fragment>
 );
 //const AppContainer: any = ({ data }) => <div>{JSON.stringify(data)}</div>;
 

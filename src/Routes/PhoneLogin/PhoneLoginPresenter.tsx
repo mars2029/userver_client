@@ -58,28 +58,36 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
+// IProps - 인자로 들어올 변수 이름들을 선언해 놓는다. 각종 이벤트들은 Container에 등록 되어 있으며 해당 함수의 obj를 넘겨 주게 된다.
 interface IProps {
   countryCode: string;
   phoneNumber: string;
+  onInputChange: (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
-// countries는
-const PhoneLoginPresenter: React.SFC<IProps> = ({ countryCode, phoneNumber }) => (
+// Onchange 이벤트는 두군데에서 처리한다.
+// Select 문은 단순히 ContrySelect로 이름만 바꾸었기 때문에 문제 없으나.
+// Input은 Input.tsx에서 따로 정의 했기 때문에 onChange와 name을 또 등록 해 줘야 한다.
+// 1. Select - 현재 소스에  name={"countryCode"} onChange={onInputChange}  입력, IProps에 이벤트 등록
+//
+// 2. Input Text - 현재소스에   name={"phoneNumber"} onChange={onInputChange}  입력,
+const PhoneLoginPresenter: React.SFC<IProps> = ({ countryCode, phoneNumber, onInputChange, onSubmit }) => (
   <Container>
     <Helmet>
       <title>Phone Login | Number</title>
     </Helmet>
     <BackArrowExtended backTo={"/"} />
     <Title>Enter your mobile number</Title>
-    <CountrySelect value={countryCode}>
+    <CountrySelect value={countryCode} name={"countryCode"} onChange={onInputChange}>
       {countries.map((country, index) => (
         <CountryOption key={index} value={country.dial_code}>
           {country.flag} {country.name} ({country.dial_code})
         </CountryOption>
       ))}
     </CountrySelect>
-    <Form>
-      <Input placeholder={"053 690 2129"} value={phoneNumber} />
+    <Form onSubmit={onSubmit}>
+      <Input placeholder={"053 690 2129"} value={phoneNumber} name={"phoneNumber"} onChange={onInputChange} />
       <Button>
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={"white"}>
           <path d="M7.33 24l-2.83-2.829 9.339-9.175-9.339-9.167 2.83-2.829 12.17 11.996z" />
