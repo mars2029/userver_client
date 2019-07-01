@@ -3,7 +3,7 @@ import PhoneLoginPresenter from "./PhoneLoginPresenter";
 import { RouteComponentProps } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Mutation } from "react-apollo";
-import { PHONE_SIGN_IN } from "./PhoneQueries.local";
+import { PHONE_SIGN_IN } from "./PhoneQueries.query";
 import { startPoneVerification, startPoneVerificationVariables } from "../../types/api";
 // P: props, S: state, SS: ANY
 // 로그인 페이지이므로 any props가 없다고 여겨지므로 안에는 아무것도 없다.
@@ -12,7 +12,7 @@ interface IState {
   countryCode: string;
   phoneNumber: string;
 }
-
+//startPoneVerification는 뮤테이션 실행 후 리턴해 오는 데이터, startPoneVerificationVariables는 인자들
 class PhoneSignInMutation extends Mutation<startPoneVerification, startPoneVerificationVariables> {}
 
 class PhoneLoginContainer extends React.Component<IProps, IState> {
