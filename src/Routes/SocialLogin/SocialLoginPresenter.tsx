@@ -31,11 +31,12 @@ const BackArrowExtended = styled(BackArrow)`
   left: 20px;
 `;
 
-const responseFacebook = response => {
-  console.log(response);
-};
+//loginCallback은 mutation을 가질 수 없으므로 void function을 대입한다.
+interface IProps {
+  loginCallback: (response) => void;
+}
 
-const SocialLoginPresenter = () => (
+const SocialLoginPresenter: React.SFC<IProps> = ({ loginCallback }) => (
   <Container>
     <Helmet>
       <title>Social Login | Nuber</title>
@@ -43,10 +44,10 @@ const SocialLoginPresenter = () => (
     <Title>Choose an account</Title>
     <BackArrowExtended backTo={"/"} />
     <FacebookLogin
-      appId="100001738470014"
-      autoLoad={true}
-      fields="name,email,picture"
-      callback={responseFacebook}
+      appId="322772025338236"
+      autoLoad={false}
+      fields="name, first_name,last_name, email,picture"
+      callback={loginCallback}
       render={renderProps => (
         <Link onClick={renderProps.onClick}>
           <Icon>

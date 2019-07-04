@@ -20,6 +20,7 @@ class PhoneLoginContainer extends React.Component<IProps, IState> {
     countryCode: "+82",
     phoneNumber: "1234565"
   };
+  public phoneMutation;
   public render() {
     //console.log(this.state.countryCode);
     const { countryCode, phoneNumber } = this.state;
@@ -61,23 +62,9 @@ class PhoneLoginContainer extends React.Component<IProps, IState> {
         // 밖에서 처리가 가능하다 - 그런데 사용 한 이유는 무엇인가?
         // Mutation이 실행할때 OnSubmit도 체크 하고 싶었기 때문이다.
         // 그냥 함수에 인자값을 넣은 것이다.
-        (mutation, { loading }) => {
-          const onSubmit: React.FormEventHandler<HTMLFormElement> = event => {
-            event.preventDefault();
-
-            const phone = `${countryCode}${phoneNumber}`;
-            // 패턴이 일치하는지 test로 체크가 가능하다.
-            const isValid = /^\+[1-9]{1}[0-9]{7,11}$/.test(phone);
-
-            // 폰 번호가 유효하면 하단의 Mutation 함수가 실행 될 것이다.
-            if (isValid) {
-              mutation();
-            } else {
-              toast.error("Please write a valid phone number!");
-            }
-          };
-
-          return <PhoneLoginPresenter countryCode={countryCode} phoneNumber={phoneNumber} onInputChange={this.onInputChange} onSubmit={onSubmit} loading={loading} />;
+        (phoneMutation, { loading }) => {
+          this.phoneMutation = phoneMutation;
+          return <PhoneLoginPresenter countryCode={countryCode} phoneNumber={phoneNumber} onInputChange={this.onInputChange} onSubmit={this.onSubmit} loading={loading} />;
         }}
       </PhoneSignInMutation>
     );
@@ -103,20 +90,20 @@ class PhoneLoginContainer extends React.Component<IProps, IState> {
   };
 
   // 상단에서 onsubmit을 체크 하므로 패스한다.
-  // public onSubmit: React.FormEventHandler<HTMLFormElement> = event => {
-  //   event.preventDefault();
-  //   const { countryCode, phoneNumber } = this.state;
-  //   console.log(countryCode, phoneNumber);
+  public onSubmit: React.FormEventHandler<HTMLFormElement> = event => {
+    event.preventDefault();
+    const { countryCode, phoneNumber } = this.state;
+    console.log(countryCode, phoneNumber);
 
-  //   // 패턴이 일치하는지 test로 체크가 가능하다.
-  //   const isValid = /^\+[1-9]{1}[0-0]{7,11}$/.test(`${countryCode}${phoneNumber}`);
+    // 패턴이 일치하는지 test로 체크가 가능하다.
+    const isValid = /^\+[1-9]{1}[0-0]{7,11}$/.test(`${countryCode}${phoneNumber}`);
 
-  //   if (isValid) {
-  //     return;
-  //   } else {
-  //     toast.error("Please write a valid phone number!");
-  //   }
-  // };
+    if (isValid) {
+      this.phoneMutation();
+    } else {
+      toast.error("Please write a valid phone number!");
+    }
+  };
 
   // MutationUpdate 시 처리가 가능하다..
   // public afterSubmit: MutationUpdaterFn = (cache, result: any) => {
