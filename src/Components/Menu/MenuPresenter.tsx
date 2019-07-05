@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { userProfile } from "../../types/api";
+import { userProfile, toggleDriving } from "../../types/api";
+import { MutationFn } from "react-apollo";
 
 const Container = styled.div`
   height: 100%;
@@ -78,9 +79,10 @@ const ToggleDriving = styled<any>("button")`
 interface IProps {
   data?: userProfile;
   loading: boolean;
+  toggleDriving: MutationFn<toggleDriving>;
 }
 
-const MenuPresenter: React.SFC<IProps> = ({ data, loading }) => (
+const MenuPresenter: React.SFC<IProps> = ({ data, loading, toggleDriving }) => (
   <Container>
     {!loading && data && data.GetMyProfile.user && data.GetMyProfile.user.fullName && (
       <React.Fragment>
@@ -97,7 +99,9 @@ const MenuPresenter: React.SFC<IProps> = ({ data, loading }) => (
         </Header>
         <SLink to="/trips">Your Trips</SLink>
         <SLink to="/settings">Settings</SLink>
-        <ToggleDriving isDriving={data.GetMyProfile.user.isDriving}>{data.GetMyProfile.user.isDriving ? "Stop driving" : "Start driving"}</ToggleDriving>
+        <ToggleDriving isDriving={data.GetMyProfile.user.isDriving} onClick={toggleDriving}>
+          {data.GetMyProfile.user.isDriving ? "Stop driving" : "Start driving"}
+        </ToggleDriving>
       </React.Fragment>
     )}
   </Container>
