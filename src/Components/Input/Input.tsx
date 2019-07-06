@@ -33,9 +33,10 @@ interface IProps {
   value: string;
   name?: string;
   onChange: any; // React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) 두개중에 하나가 들어갈 수 있으므로 그냥 any로 작성하였다.
+  className?: string;
 }
-const Input: React.SFC<IProps> = ({ placeholder = "", type = "text", required = true, value, name = "", onChange }) => (
-  <Container placeholder={placeholder} type={type} required={required} value={value} name={name} onChange={onChange} />
+const Input: React.SFC<IProps> = ({ placeholder = "", type = "text", required = true, value, name = "", onChange, className }) => (
+  <Container className={className} placeholder={placeholder} type={type} required={required} value={value} name={name} onChange={onChange} />
 );
 
 export default Input;

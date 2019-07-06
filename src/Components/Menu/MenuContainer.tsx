@@ -1,10 +1,10 @@
 import React from "react";
 import MenuPresenter from "./MenuPresenter";
+
 import { Query, Mutation } from "react-apollo";
 import { userProfile, toggleDriving } from "../../types/api";
 import { USER_PROFILE } from "../../sharedQueries.query";
 import { TOGGLE_DRIVING } from "./MenuQuery.query";
-import { toast } from "react-toastify";
 
 class ProfileQuery extends Query<userProfile> {}
 
