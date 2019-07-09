@@ -6,12 +6,15 @@ import { USER_PROFILE } from "../../sharedQueries.query";
 import { UPDATE_PROFILE } from "./EditAccountQuery.query";
 import { toast } from "react-toastify";
 import { RouteComponentProps } from "react-router";
+import axios from "axios";
 
 interface IState {
   firstName: string;
   lastName: string;
   email: string;
   profilePhoto: string;
+  uploading: boolean;
+  file?: boolean;
 }
 interface IProps extends RouteComponentProps<any> {}
 
@@ -24,13 +27,18 @@ class EditAccountContainer extends React.Component<IProps, IState> {
     firstName: "",
     lastName: "",
     email: "",
-    profilePhoto: ""
+    profilePhoto: "",
+    uploading: false
   };
 
   public render() {
-    const { firstName, lastName, email, profilePhoto } = this.state;
+    const { firstName, lastName, email, profilePhoto, uploading } = this.state;
+    // onCompleted 는 기본적으로 서버의 API로부터 데이터를 얻었을 때만 호출이 된다. 즉 캐쉬 값을 체ㅋ
+    // fetchPolicy={"cache-and-network"} -> cache를 먼저 확인하고 이게 동작하지 않으면 서버에서 값을 가져온다.
+    // fetchPolicy={"cache-only"}    -> 서버에 요청하지 않는다는것.
+    // fetchPolicy={"network-only"}  -> 캐쉬를 고려하지 않는다는것. 즉 네트워크로 처리한다는것.
     return (
-      <ProfileQuery query={USER_PROFILE} onCompleted={this.updateFields}>
+      <ProfileQuery query={USER_PROFILE} fetchPolicy={"cache-and-network"} onCompleted={this.updateFields}>
         {() => (
           <UpdateProfileMutation
             mutation={UPDATE_PROFILE}
@@ -59,6 +67,7 @@ class EditAccountContainer extends React.Component<IProps, IState> {
                 loading={loading}
                 onInputChange={this.onInputChange}
                 onSubmit={updateProfileFn}
+                uploading={uploading}
               />
             )}
           </UpdateProfileMutation>
@@ -67,19 +76,41 @@ class EditAccountContainer extends React.Component<IProps, IState> {
     );
   }
 
-  public onInputChange: React.ChangeEventHandler<HTMLInputElement> = event => {
+  public onInputChange: React.ChangeEventHandler<HTMLInputElement> = async event => {
     const {
-      target: { name, value }
+      target: { name, value, files }
     } = event;
+
+    console.log("target", event.target);
+
+    if (files) {
+      this.setState({
+        uploading: true
+      });
+      const formData = new FormData();
+      formData.append("file", files[0]);
+      formData.append("api_key", "575424371315181");
+      formData.append("upload_preset", "oegg4juc");
+      formData.append("timestamp", String(Date.now() / 1000));
+      const {
+        data: { secure_url }
+      } = await axios.post("https://api.cloudinary.com/v1_1/dnvet91za/image/upload", formData);
+
+      if (secure_url) {
+        this.setState({
+          uploading: false,
+          profilePhoto: secure_url
+        });
+      }
+    }
 
     this.setState({
       [name]: value
     } as any);
-    console.log(this.state);
   };
 
   public updateFields = (data: {} | userProfile) => {
-    console.log(data);
+    console.log("updateFields", data);
     if ("GetMyProfile" in data) {
       const {
         GetMyProfile: { user }
@@ -95,7 +126,7 @@ class EditAccountContainer extends React.Component<IProps, IState> {
       }
     }
 
-    console.log(this.state);
+    console.log("updateFields2", this.state);
   };
 }
 
